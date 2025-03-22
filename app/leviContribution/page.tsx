@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import PinField from "react-pin-field";
-
+import { useRouter } from "next/navigation"; 
 const months = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -12,8 +12,8 @@ const months = [
 const contributionTypes = ["wedding", "burial", "ordination"];
 
 const LevyContribution: React.FC = () => {
-  const [ownerName, setOwnerName] = useState("");
-  const [contributorName, setContributorName] = useState("");
+  const [ownerRegNumber, setOwnerRegNumber] = useState("");
+  const [contributorRegNumber, setContributorRegNumber] = useState("");
   const [amount, setAmount] = useState("");
   const [month, setMonth] = useState("January");
   const [year, setYear] = useState(new Date().getFullYear().toString());
@@ -22,36 +22,41 @@ const LevyContribution: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
+  const router = useRouter(); // ✅ Initialize router
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setSuccessMessage(null);
-
+  
     if (otp.length !== 5) {
       setError("OTP must be 5 digits.");
       setLoading(false);
       return;
     }
-
+  
     try {
-      const response = await axios.post("https://mikados.onrender.com/mikados/levy-contributions/pay", {
-        ownerName,
-        contributorName,
+      const response = await axios.post("https://mikados-api.onrender.com/mikados/levy-contributions/pay", {
+        ownerRegNumber: Number(ownerRegNumber),
+        contributorRegNumber: Number(contributorRegNumber),
         amount: Number(amount),
         month,
         year,
         otp: Number(otp),
         contributionType
       });
-
+  
       console.log("API Response:", response.data);
+  
+      if (response.data?.status === true) {
+        setSuccessMessage(response.data.message || "Contribution was successful!");
 
-      if (response.data?.status === false && response.data?.message.toLowerCase().includes("invalid otp")) {
-        setError("Invalid OTP. Please try again.");
+         // ✅ Redirect to "/about" after 2 seconds
+         setTimeout(() => {
+          router.push("/");
+        }, 2000);
       } else {
-        setSuccessMessage("Contribution was successful!");
+        setError(response.data.message || "An unexpected error occurred.");
       }
     } catch (err: any) {
       console.error("Error:", err);
@@ -60,49 +65,50 @@ const LevyContribution: React.FC = () => {
       setLoading(false);
     }
   };
+  
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
+    <div className="flex justify-center items-center min-h-screen bg-[#141332] p-4">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg"
+        className="w-full max-w-md bg-[#1D1D41] text-white p-6 rounded-lg shadow-lg"
       >
-        <h1 className="text-xl font-bold text-center mb-4">Levy Contribution</h1>
+        <h1 className="text-3xl mb-8 font-bold text-center ">Levy Contribution</h1>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sm font-medium mb-2">Owner Name</label>
+            <label className="block text-sm font-medium mb-2">Owner Reg Number</label>
             <input
-              type="text"
-              value={ownerName}
-              onChange={(e) => setOwnerName(e.target.value)}
-              placeholder="Enter owner name"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+              type="number"
+              value={ownerRegNumber}
+              onChange={(e) => setOwnerRegNumber(e.target.value)}
+              placeholder="Enter owner reg number"
+              className="w-full p-2 border placeholder:text-gray-400 border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Contributor Name</label>
+            <label className="block text-sm font-medium mb-2">Contributor Reg Number</label>
             <input
-              type="text"
-              value={contributorName}
-              onChange={(e) => setContributorName(e.target.value)}
-              placeholder="Enter contributor name"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+              type="number"
+              value={contributorRegNumber}
+              onChange={(e) => setContributorRegNumber(e.target.value)}
+              placeholder="Enter contributor reg number"
+              className="w-full p-2 border placeholder:text-gray-400 border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font- mb-2">Amount</label>
+            <label className="block text-sm font-medium mb-2">Amount</label>
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter amount"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+              className="w-full p-2 border placeholder:text-gray-400 border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
               required
             />
           </div>
@@ -112,7 +118,7 @@ const LevyContribution: React.FC = () => {
             <select
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+              className="w-full p-2 text-gray-400 border placeholder:text-gray-400 border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
               required
             >
               {months.map((m) => (
@@ -128,7 +134,7 @@ const LevyContribution: React.FC = () => {
               value={year}
               onChange={(e) => setYear(e.target.value)}
               placeholder="Enter year"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+              className="w-full p-2 border placeholder:text-gray-400 border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
               required
             />
           </div>
@@ -138,7 +144,7 @@ const LevyContribution: React.FC = () => {
             <select
               value={contributionType}
               onChange={(e) => setContributionType(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+              className="w-full text-gray-400 p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
               required
             >
               {contributionTypes.map((type) => (
@@ -148,7 +154,7 @@ const LevyContribution: React.FC = () => {
           </div>
 
           <div>
-            <label className=" text-sm text-center flex justify-center mx-auto mb-2 font-medium">OTP</label>
+            <label className="text-sm text-center flex justify-center mx-auto mb-2 font-medium">OTP</label>
             <div className="flex justify-center gap-4">
               <PinField
                 length={5}
@@ -164,7 +170,7 @@ const LevyContribution: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-950 text-white py-2 rounded-lg font-semibold hover:opacity-80 transition"
+            className="w-full bg-[#CBC8FF] text-black py-3 rounded-lg font-semibold hover:opacity-80 transition"
             disabled={loading}
           >
             {loading ? "Processing..." : "Submit Contribution"}

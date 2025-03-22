@@ -9,7 +9,10 @@ import { Table, Thead, Tbody, Tr, Th, Td } from "@/components/ui/Table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Member {
+  _id: string;
+  regNumber: number;
   fullName: string;
+  fee: number;
   createdAt: string;
 }
 
@@ -20,18 +23,15 @@ const MikadosMembers = () => {
   const [sortKey, setSortKey] = useState<"fullName" | "createdAt">("fullName");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 14;
+  const itemsPerPage = 10;
 
   useEffect(() => {
     axios
-      .get("https://mikados.onrender.com/mikados/all")
+      .get("https://mikados-api.onrender.com/mikados/all")
       .then((response) => {
-        console.log("API Response:", response.data);
         if (Array.isArray(response.data.data)) {
           setMembers(response.data.data);
           setFilteredMembers(response.data.data);
-        } else {
-          console.error("Unexpected response format", response.data);
         }
       })
       .catch((error) => console.error("Error fetching members:", error));
@@ -51,10 +51,14 @@ const MikadosMembers = () => {
     setSortOrder(order);
 
     const sorted = [...filteredMembers].sort((a, b) => {
-      if (a[key] < b[key]) return order === "asc" ? -1 : 1;
-      if (a[key] > b[key]) return order === "asc" ? 1 : -1;
-      return 0;
+      if (key === "createdAt") {
+        return order === "asc"
+          ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      return a[key].localeCompare(b[key]) * (order === "asc" ? 1 : -1);
     });
+
     setFilteredMembers(sorted);
   };
 
@@ -65,67 +69,95 @@ const MikadosMembers = () => {
 
   return (
     <motion.div
-      className="p-6 max-w-4xl mx-auto"
+      className="p-2.5 text-white bg-[#141332] max-w-5xl mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <h1 className="text-2xl font-bold text-center mb-4">Mikados Members</h1>
-      <Input
-        placeholder="Search by name..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-4"
-      />
-      <Table>
-        <Thead>
-          <Tr>
-            <Th>
-              <span
-                className="cursor-pointer"
-                onClick={() => sortData("fullName")}
-              >
-                NAME{" "}
-                {sortKey === "fullName" && (sortOrder === "asc" ? "↑" : "↓")}
-              </span>
-            </Th>
-            <Th>
-              <span
-                className="cursor-pointer"
-                onClick={() => sortData("createdAt")}
-              >
-                JOINED DATE{" "}
-                {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
-              </span>
-            </Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {paginatedMembers.map((member, index) => (
-            <Tr key={index}>
-              <Td>{member.fullName}</Td>
-              <Td>{new Date(member.createdAt).toLocaleDateString()}</Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-      <div className="flex justify-between items-center mt-4">
+      <h1 className="text-3xl font-bold mt-4 text-center mb-6 text-white">
+        Mikados Members
+      </h1>
+      
+      {/* Search Bar */}
+      <div className="mb-4 flex justify-center">
+        <Input
+          placeholder="Search by name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full max-w-md shadow-md"
+        />
+      </div>
+
+      {/* Responsive Table */}
+      <div className="overflow-x-auto shadow-lg rounded-lg">
+        <motion.table 
+          className="min-w-full bg-[#1D1D41] rounded-lg overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+       <Thead>
+  <Tr>
+
+  <Th><div className="py-2 ">ID</div></Th>
+    <Th>
+      <span
+        className="cursor-pointer flex items-center"
+        onClick={() => sortData("fullName")}
+      >
+        Name {sortKey === "fullName" && (sortOrder === "asc" ? "↑" : "↓")}
+      </span>
+    </Th>
+    <Th>
+      <span
+        className="cursor-pointer flex items-center"
+        onClick={() => sortData("createdAt")}
+      >
+        Joined Date {sortKey === "createdAt" && (sortOrder === "asc" ? "↑" : "↓")}
+      </span>
+    </Th>
+   
+    <Th><div className="py-2 px-">Fee</div></Th>
+  </Tr>
+</Thead>
+<Tbody>
+  {paginatedMembers.map((member, index) => (
+    <motion.tr
+      key={member._id}
+      className="hover:bg-[#141332] transition-all border-b"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+    >
+       <Td><div className="py-2 px-">{member.regNumber}</div></Td>
+      <Td><div className="py-2 px-">{member.fullName}</div></Td>
+      <Td><div className="py-2 px-">{new Date(member.createdAt).toLocaleDateString()}</div></Td>
+     
+      <Td><div className="py-2 px- text-green-600 font-semibold">${member.fee}</div></Td>
+    </motion.tr>
+  ))}
+</Tbody>
+
+        </motion.table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-between items-center mt-6">
         <Button
           disabled={currentPage === 1}
           onClick={() => setCurrentPage((prev) => prev - 1)}
+          className="px-4 py-2 rounded-lg flex items-center"
         >
-          <ChevronLeft />
+          <ChevronLeft /> Prev
         </Button>
-        <span>
-          Page {currentPage} of{" "}
-          {Math.ceil(filteredMembers.length / itemsPerPage)}
+        <span className="text-[#CBC8FF] font-semibold">
+          Page {currentPage} of {Math.ceil(filteredMembers.length / itemsPerPage)}
         </span>
         <Button
-          disabled={
-            currentPage === Math.ceil(filteredMembers.length / itemsPerPage)
-          }
+          disabled={currentPage === Math.ceil(filteredMembers.length / itemsPerPage)}
           onClick={() => setCurrentPage((prev) => prev + 1)}
+          className="px-4 py-2 rounded-lg flex items-center"
         >
-          <ChevronRight />
+          Next <ChevronRight />
         </Button>
       </div>
     </motion.div>

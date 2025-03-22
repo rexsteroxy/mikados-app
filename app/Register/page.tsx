@@ -30,7 +30,7 @@ const Register: React.FC = () => {
   
     try {
       const response = await axios.post(
-        "https://mikados.onrender.com/mikados/register",
+        "https://mikados-api.onrender.com/mikados/register",
         {
           fullName: username,
           fee: Number(fee),
@@ -73,8 +73,8 @@ const Register: React.FC = () => {
   
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white px-4">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
+    <div className="flex justify-center items-center min-h-screen bg-[#141332] px-4">
+      <div className="w-full max-w-md text-white bg-[#1D1D41] p-6 rounded-lg shadow-lg">
         <h1 className="font-bold text-center text-2xl md:text-4xl mb-4">Welcome Back!</h1>
         <p className="text-lg md:text-xl text-center">ST PETER CLAVER SEMINARY OKPALA</p>
 
@@ -120,14 +120,14 @@ const Register: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-950 text-white py-3 rounded-lg font-semibold hover:opacity-80 transition"
+            className="w-full bg-[#CBC8FF] text-black py-3 rounded-lg font-semibold hover:opacity-80 transition"
             disabled={loading || otp.length !== 5}
           >
             {loading ? "Processing..." : "Register"}
           </button>
         </form>
 
-        <p className="mt-4 text-gray-500 text-center text-sm">For Mikados students only || @ All Right Reserved</p>
+        <p className="mt-4 text-[#CBC8FF] text-center text-sm">For Mikados students only || @ All Right Reserved</p>
       </div>
     </div>
   );

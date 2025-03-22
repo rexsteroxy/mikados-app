@@ -9,7 +9,7 @@ const months = [
 ];
 
 const GetMonthlyDues: React.FC = () => {
-  const [fullName, setFullName] = useState("");
+  const [regNumber, setRegNumber] = useState("");
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [month, setMonth] = useState("January");
   const [loading, setLoading] = useState(false);
@@ -25,8 +25,8 @@ const GetMonthlyDues: React.FC = () => {
     setData([]);
 
     try {
-      const response = await axios.get("https://mikados.onrender.com/mikados/monthly-dues", {
-        params: { fullName, month, year }
+      const response = await axios.get("https://mikados-api.onrender.com/mikados/monthly-dues", {
+        params: { regNumber, month, year }
       });
 
       console.log("API Response:", response.data); // Debugging
@@ -53,45 +53,45 @@ const GetMonthlyDues: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 p-4">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-[#141332] p-4">
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg"
+        className="w-full max-w-md bg-[#1D1D41] text-white p-6 rounded-lg shadow-lg"
       >
         <h1 className="text-xl font-bold text-center mb-4">Check Monthly Dues</h1>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sm font-medium">Full Name</label>
+            <label className="block mb-2 text-sm font-medium">Registration Number</label>
             <input
               type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Enter full name"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+              value={regNumber}
+              onChange={(e) => setRegNumber(e.target.value)}
+              placeholder="Enter registration number"
+              className="w-full p-2 placeholder:text-gray-400 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
               
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Year</label>
+            <label className="block mb-2 text-sm font-medium">Year</label>
             <input
               type="number"
               value={year}
               onChange={(e) => setYear(e.target.value)}
               placeholder="Enter year"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+              className="w-full p-2 border  border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Month</label>
+            <label className="block mb-2 text-sm font-medium">Month</label>
             <select
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
+              className="w-full p-2 border text-gray-400 border-gray-300 rounded-lg focus:ring focus:ring-blue-300"
               required
             >
               {months.map((m) => (
@@ -105,61 +105,53 @@ const GetMonthlyDues: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-950 text-white py-2 rounded-lg font-semibold hover:opacity-80 transition"
+            className="w-full cursor-pointer bg-[#CBC8FF]  text-black py-3 rounded-lg font-semibold hover:opacity-80 transition"
             disabled={loading}
           >
             {loading ? "Checking..." : "Check Dues"}
           </button>
         </form>
-
-        {/* TABLE TO DISPLAY DATA */}
-      
       </motion.div>
 
       {data.length > 0 ? (
-         <div className="overflow-x-auto mt-5 p-2 w-full">
-         <motion.table
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.5 }}
-           className="w-full min-w-max border-collapse border border-gray-300"
-         >
-           <thead>
-             <tr className="bg-blue-100 text-sm md:text-base">
-               <th className="border p-2 whitespace-nowrap">Full Name</th>
-               <th className="border p-2 whitespace-nowrap">Amount</th>
-               <th className="border p-2 whitespace-nowrap">Month</th>
-               <th className="border p-2 whitespace-nowrap">Year</th>
-               {/* <th className="border p-2 whitespace-nowrap">Date</th> */}
-             </tr>
-           </thead>
-           <tbody>
-             {data.map((item, index) => (
-               <motion.tr
-                 key={index}
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: index * 0.1 }}
-                 className="text-center bg-white hover:bg-gray-100 text-sm md:text-base"
-               >
-                 <td className="border p-2 whitespace-nowrap">{item.fullName}</td>
-                 <td className="border p-2 whitespace-nowrap">₦{item.amount}</td>
-                 <td className="border p-2 whitespace-nowrap">{item.month}</td>
-                 <td className="border p-2 whitespace-nowrap">{item.year}</td>
-                 {/* <td className="border p-2 whitespace-nowrap">
-                   {new Date(item.createdAt).toLocaleDateString()}
-                 </td> */}
-               </motion.tr>
-             ))}
-           </tbody>
-         </motion.table>
-       </div>
-       
-        ) : (
-          successMessage && successMessage !== "Data fetched successfully!" && (
-            <p className="text-center text-gray-600 mt-4">No record yet!</p>
-          )
-        )}
+        <div className="overflow-x-auto mt-5 p-2 w-full">
+          <motion.table
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full min-w-max border-collapse border border-gray-300"
+          >
+            <thead>
+              <tr className="bg-[#1D1D41] text-white text-sm md:text-base">
+                <th className="border border-white p-2 whitespace-nowrap">Reg Number</th>
+                <th className="border border-white p-2 whitespace-nowrap">Amount</th>
+                <th className="border border-white p-2 whitespace-nowrap">Month</th>
+                <th className="border border-white p-2 whitespace-nowrap">Year</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item, index) => (
+                <motion.tr
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-center bg-gray-300 text-sm md:text-base"
+                >
+                  <td className="border border-white p-2 whitespace-nowrap">{item.regNumber}</td>
+                  <td className="border border-white p-2 whitespace-nowrap">₦{item.amount}</td>
+                  <td className="border border-white p-2 whitespace-nowrap">{item.month}</td>
+                  <td className="border border-white p-2 whitespace-nowrap">{item.year}</td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </motion.table>
+        </div>
+      ) : (
+        successMessage && successMessage !== "Data fetched successfully!" && (
+          <p className="text-center text-gray-600 mt-4">No record yet!</p>
+        )
+      )}
     </div>
   );
 };

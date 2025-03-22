@@ -6,7 +6,7 @@ import PinField from "react-pin-field";
 
 const Monthly: React.FC = () => {
   const router = useRouter();
-  const [fullName, setFullName] = useState<string>("");
+  const [regNumber, setRegNumber] = useState<string>("");
   const [month, setMonth] = useState<string>("");
   const [year, setYear] = useState<string>("");
   const [otp, setOtp] = useState<string>("");
@@ -19,7 +19,6 @@ const Monthly: React.FC = () => {
       const timer = setTimeout(() => {
         router.push("/");
       }, 2000); // Redirect after 2 seconds
-
       return () => clearTimeout(timer);
     }
   }, [successMessage, router]);
@@ -32,9 +31,9 @@ const Monthly: React.FC = () => {
   
     try {
       const response = await axios.post(
-        "https://mikados.onrender.com/mikados/monthly-dues/pay",
+        "https://mikados-api.onrender.com/mikados/monthly-dues/pay",
         {
-          fullName,
+          regNumber: Number(regNumber),
           month,
           year,
           otp: Number(otp),
@@ -47,49 +46,55 @@ const Monthly: React.FC = () => {
         }
       );
   
-      // Check if the response contains an invalid OTP message
-      if (response.data?.message === "Invalid OTP") {
-        throw new Error("Invalid OTP. Please try again.");
+      if (response.status === 200 && response.data.status === true) {
+        setSuccessMessage(response.data.message || "Payment successful!");
+      } else {
+        setError(response.data.message || "Unexpected response from server");
       }
   
-      if (response.status === 200) {
-        setSuccessMessage("Payment successful!");
-      } else {
-        throw new Error("Unexpected response from server");
-      }
     } catch (err: any) {
       console.error("Error:", err);
   
-      if (err.response) {
-        if (err.response.status === 400 && err.response.data?.message === "Invalid OTP") {
-          setError("Invalid OTP. Please try again.");
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          const errorMessage = err.response.data?.message || "Something went wrong";
+  
+          if (errorMessage.includes("Duplicate payment detected")) {
+            setError("Monthly dues already paid for this period.");
+          } else {
+            setError(errorMessage);
+          }
+        } else if (err.request) {
+          setError("No response from server. Please check your network.");
         } else {
-          setError(err.response.data?.message || "Something went wrong");
+          setError("Request setup failed. Please try again.");
         }
       } else {
-        setError("Network error. Please try again.");
+        setError("An unexpected error occurred.");
       }
     } finally {
       setLoading(false);
     }
   };
   
+  
+  
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white px-4">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
+    <div className="flex justify-center items-center min-h-screen bg-[#141332] px-4">
+      <div className="w-full max-w-md bg-[#1D1D41] text-white p-6 rounded-lg shadow-lg">
         <h1 className="font-bold text-center text-2xl md:text-4xl mb-4">Monthly Dues</h1>
         <p className="text-lg md:text-xl text-center">ST PETER CLAVER SEMINARY OKPALA</p>
 
         <form className="space-y-6 mt-7" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sm mb-2 font-medium">Full Name</label>
+            <label className="block text-sm mb-2 font-medium">Reg Number</label>
             <input
-              type="text"
-              placeholder="Enter your full name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+              type="number"
+              placeholder="Enter your Reg Number"
+              value={regNumber}
+              onChange={(e) => setRegNumber(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 placeholder:text-gray-400 focus:ring-blue-300"
               required
             />
           </div>
@@ -99,7 +104,7 @@ const Monthly: React.FC = () => {
             <select
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full p-3 text-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
               required
             >
               <option value="">Select Month</option>
@@ -116,7 +121,7 @@ const Monthly: React.FC = () => {
               placeholder="Enter year"
               value={year}
               onChange={(e) => setYear(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-blue-300"
               required
             />
           </div>
@@ -138,14 +143,14 @@ const Monthly: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-950 text-white py-3 rounded-lg font-semibold hover:opacity-80 transition"
+            className="w-full bg-[#CBC8FF] text-black py-3 rounded-lg font-semibold hover:opacity-80 transition"
             disabled={loading || otp.length !== 5}
           >
             {loading ? "Processing..." : "Pay Now"}
           </button>
         </form>
 
-        <p className="mt-4 text-gray-500 text-center text-sm">For Mikados students only || @ All Right Reserved</p>
+        <p className="mt-4 text-[#CBC8FF] text-center text-sm">For Mikados students only || @ All Right Reserved</p>
       </div>
     </div>
   );

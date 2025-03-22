@@ -5,7 +5,7 @@ export const Table = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const Thead = ({ children }: { children: React.ReactNode }) => {
-  return <thead className="bg-gray-200">{children}</thead>;
+  return <thead className="bg-[#1D1D41]">{children}</thead>;
 };
 
 export const Tbody = ({ children }: { children: React.ReactNode }) => {

@@ -12,12 +12,15 @@
     "@radix-ui/react-dialog": "^1.1.6",
     "axios": "^1.8.2",
     "axois": "^0.0.1-security",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.4.10",
     "lucide-react": "^0.479.0",
+    "motion": "^12.5.0",
     "next": "15.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-pin-field": "^4.0.2"
+    "react-pin-field": "^4.0.2",
+    "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

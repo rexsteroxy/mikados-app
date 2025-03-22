@@ -20,9 +20,10 @@ const buttonLinks = [
 
 const Home = () => {
   return (
-    <div className="flex items-center justify-center flex-col h-screen">
-      {/* <h1  className="font-bold text-center mt-6 text-2xl mb-4">Welcome To Mikados Official Site</h1> */}
-      <p className="text-xl mb-12 text-center mt-1 px-2 md:px-0">
+    <div className="flex items-center justify-center bg-[#1D1D41] flex-col h-screen">
+      
+      <h1  className="font-bold text-white text-center mt-6 text-3xl mb-4">Welcome To Mikados Official Site</h1>
+      <p className="text-xl text-white mb-12 text-center mt-1 px-2 md:px-0">
         ST PETER CLAVER SEMINARY OKPALA
       </p>
       <div className="">
@@ -30,7 +31,7 @@ const Home = () => {
           {buttonLinks.map(({ text, link }, index) => (
             <Link key={index} href={link}>
               <motion.button
-                className="bg-blue-900 cursor-pointer text-white px-6 py-3 rounded-lg font-bold text-lg shadow-lg"
+                className="bg-[#CBC8FF] cursor-pointer px-6 py-3 rounded-lg font-bold text-lg shadow-lg"
                 variants={buttonVariants}
                 initial="initial"
                 whileHover="hover"
@@ -42,7 +43,7 @@ const Home = () => {
           ))}
         </div>
       </div>
-      <p className="mt-16 text-gray-500 text-center">
+      <p className="mt-16 text-gray-300 text-center">
         For Mikados || @ All Right Reserved 2025
       </p>
     </div>
