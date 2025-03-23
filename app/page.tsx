@@ -25,7 +25,7 @@ const Home = () => {
       <Image src={logo} alt="logo_img" className="h-32 mt-16 w-32 rounded-full"/>
       <h1  className="font-bold text-white text-center mt-6 text-3xl mb-4">Welcome To Mikados Official Site</h1>
       <p className="text-xl text-white mb-12 text-center mt-1 px-2 md:px-0">
-        ST PETER CLAVER SEMINARY OKPALA
+        ST PETER CLAVER SEMINARY OKPALA (2014 SET)
       </p>
       <div className="">
         <div className="grid grid-cols-2 p-4 gap-6">
