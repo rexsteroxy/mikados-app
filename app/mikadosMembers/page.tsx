@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Table, Thead, Tbody, Tr, Th, Td } from "@/components/ui/Table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { GridLoader } from "react-spinners";
 
 interface Member {
   _id: string;
@@ -17,6 +18,7 @@ interface Member {
 }
 
 const MikadosMembers = () => {
+  const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState<Member[]>([]);
   const [filteredMembers, setFilteredMembers] = useState<Member[]>([]);
   const [search, setSearch] = useState("");
@@ -26,17 +28,28 @@ const MikadosMembers = () => {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    axios
-      .get("https://mikados-api.onrender.com/mikados/all")
-      .then((response) => {
+    const fetchMembers = async () => {
+      try {
+        setLoading(true); // Set loading to true before fetching
+  
+        const response = await axios.get<{ data: Member[] }>(
+          "https://mikados-api.onrender.com/mikados/all"
+        );
+  
         if (Array.isArray(response.data.data)) {
           setMembers(response.data.data);
           setFilteredMembers(response.data.data);
         }
-      })
-      .catch((error) => console.error("Error fetching members:", error));
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      } finally {
+        setLoading(false); // Ensure loading is set to false after fetching (success or failure)
+      }
+    };
+  
+    fetchMembers();
   }, []);
-
+  
   useEffect(() => {
     const filtered = members.filter((member) =>
       member.fullName.toLowerCase().includes(search.toLowerCase())
@@ -88,7 +101,14 @@ const MikadosMembers = () => {
       </div>
 
       {/* Responsive Table */}
-      <div className="overflow-x-auto shadow-lg rounded-lg">
+
+      {loading ? (
+     <div className=" flex items-center justify-center mt-3">
+      {/* <GridLoader className="text-green-500" /> */} <p className="text-green-500 font-semibold">Loading...</p>
+     </div>
+      ) :(
+
+        <div className="overflow-x-auto shadow-lg rounded-lg">
         <motion.table 
           className="min-w-full bg-[#1D1D41] rounded-lg overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
@@ -139,6 +159,7 @@ const MikadosMembers = () => {
 
         </motion.table>
       </div>
+      )}
 
       {/* Pagination */}
       <div className="flex justify-between items-center mt-6">
