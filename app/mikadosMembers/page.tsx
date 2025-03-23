@@ -152,7 +152,7 @@ const MikadosMembers = () => {
       <Td><div className="py-2 px-">{member.fullName}</div></Td>
       <Td><div className="py-2 px-">{new Date(member.createdAt).toLocaleDateString()}</div></Td>
      
-      <Td><div className="py-2 px- text-green-600 font-semibold">${member.fee}</div></Td>
+      <Td><div className="py-2 px- text-green-600 font-semibold">₦{member.fee}</div></Td>
     </motion.tr>
   ))}
 </Tbody>
