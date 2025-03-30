@@ -59,7 +59,7 @@ const GetMonthlyDues: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-[#1D1D41] text-white p-6 rounded-lg shadow-lg"
       >
-        <h1 className="text-xl font-bold text-center mb-4">Check Monthly Dues</h1>
+        <h1 className="text-xl font-bold text-center mb-4">List Monthly Dues</h1>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
