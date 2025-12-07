@@ -9,7 +9,7 @@ const months = [
   "July", "August", "September", "October", "November", "December"
 ];
 
-const contributionTypes = ["wedding", "burial", "ordination"];
+const contributionTypes = ["wedding", "burial", "ordination", "anniversary"];
 
 const LevyContribution: React.FC = () => {
   const [ownerRegNumber, setOwnerRegNumber] = useState("");
