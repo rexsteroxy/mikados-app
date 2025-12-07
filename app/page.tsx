@@ -12,10 +12,13 @@ const buttonVariants = {
 };
 
 const buttonLinks = [
-  { text: "Member Registration", link: "/Register", excos: true },
+  
   { text: "All Members", link: "/mikadosMembers", excos: false },
-  { text: "Pay Monthly Dues", link: " /monthlyDues", excos: true },
+  { text: "Member Registration", link: "/Register", excos: true },
+ 
   { text: "List Monthly Dues", link: "/getMonthlyDues", excos: false },
+   { text: "Pay Monthly Dues", link: " /monthlyDues", excos: true },
+  
   { text: "Check Monthly Dues", link: "/checkmdues", excos: false },
   { text: "Levy Contributions", link: "/leviContribution", excos: true },
   { text: "List all Contributions", link: "/listContribution", excos: false },
