@@ -7,7 +7,8 @@ import PinField from "react-pin-field";
 const Monthly: React.FC = () => {
   const router = useRouter();
   const [regNumber, setRegNumber] = useState<string>("");
-  const [month, setMonth] = useState<string>("");
+const [month, setMonths] = useState<string[]>([]);
+
   const [year, setYear] = useState<string>("");
   const [otp, setOtp] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -28,7 +29,7 @@ const Monthly: React.FC = () => {
     setLoading(true);
     setError(null);
     setSuccessMessage(null);
-  
+  console.log(month)
     try {
       const response = await axios.post(
         "https://mikados-api.onrender.com/mikados/monthly-dues/pay",
@@ -99,20 +100,33 @@ const Monthly: React.FC = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm mb-2 font-medium">Month</label>
-            <select
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
-              className="w-full p-3 text-gray-400 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-              required
-            >
-              <option value="">Select Month</option>
-              {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m) => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </select>
-          </div>
+       <div>
+  <label className="block text-sm mb-2 font-medium">Select Month(s)</label>
+
+  <div className="grid grid-cols-2 gap-2 text-gray-300">
+    {[
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ].map((m) => (
+      <label key={m} className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          value={m}
+          checked={month.includes(m)}
+          onChange={(e) => {
+            if (e.target.checked) {
+              setMonths([...month, m]);     // add
+            } else {
+              setMonths(month.filter((x) => x !== m)); // remove
+            }
+          }}
+          className="w-4 h-4"
+        />
+        {m}
+      </label>
+    ))}
+  </div>
+</div>
 
           <div>
             <label className="block text-sm mb-2 font-medium">Year</label>
